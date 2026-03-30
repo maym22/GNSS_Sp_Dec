@@ -1,0 +1,135 @@
+# Satellite constellation switches
+satellite:
+  useGPS: 1          # Enable GPS (1 = enabled, 0 = disabled)
+  useBDS: 0          # Enable BDS (1 = enabled, 0 = disabled)
+  sat_max_num: 32    # Maximum satellite number (computed as useGPS*32 + useBDS*30)
+
+# Frequency configuration (kHz)
+frequency:
+  Fif: 0             # Digital intermediate frequency (set to 0 in simulation)
+  Fs: 15.36e3        # Sampling frequency
+  T_samp: 10.0       # Sampling period（s）
+
+# Time configuration
+datetime:
+  AprxTime:
+    start_gps_week: "2026-01-11 00:00:00"   # Start time of the GPS week
+    ephemeris_read: "2026-01-13 18:00:00"   # Reference time for ephemeris reading
+    ref_observation: "2026-01-13 19:00:00"  # Reference observation time
+  DurMax: "03:59:59"                        # Maximum duration (HH:MM:SS)
+
+# Observation data configuration
+observation:
+  data_path: "/home/mym/ws_mym/Sf_ver0/data/part_spoof_demo.obs"          # Root directory of observation files
+  ObsMax: 86400                             # Maximum observation limit for reading/export
+  ObsPer: 1000                              # Time interval between adjacent observations (ms)
+
+# Ephemeris data configuration
+ephemeris:
+  data_path: "/home/mym/ws_mym/Sf_ver0/data/pasf_Ant_Ephemeris.24n"  # Root directory of ephemeris files
+
+# Anti-spoofing configuration
+anti_spoofing:
+  # M1: Ephemeris normativity check
+  chnEphemNormativity:
+    flag: true                                 # Enable flag (1 = enabled, 0 = disabled)
+
+  # M2: Satellite visibility check
+  chnSatVisibility:
+    flag: true                                 # Enable flag (1 = enabled, 0 = disabled)
+    Thr: 5                                   # Elevation threshold (deg)
+    rec_pos_lla: [40, 116, 1000]             # Receiver prior position [latitude, longitude, altitude]
+
+  # M3: C/N0 anomaly detection
+  chnCn0:
+    flag: true                              # Enable flag (1 = enabled, 0 = disabled)
+    WindowSize: 10                          # Sliding window size for C/N0 analysis
+    Thr: 45                                 # C/N0 threshold
+
+  # M4: Doppler consistency check
+  chnDoppCon:
+    flag: true                              # Enable flag (1 = enabled, 0 = disabled)
+    WindowSize: 10                          # Sliding window size 
+    Thr: 250                                # Doppler threshold
+    Fif: 0                                  # Digital intermediate frequency (kHz)
+
+  # M5: Single-satellite clock drift variation check
+  chnClkDft:
+    flag: true                              # Enable flag (1 = enabled, 0 = disabled)
+    WindowSize: 10                          # Sliding window size
+    Thr: 1                                  # Clock drift threshold
+
+  # M6: Signal transmission time validity check
+  chnRho:
+    flag: true                              # Enable flag (1 = enabled, 0 = disabled)
+    WindowSize: 10                          # Sliding window size
+    Thr: [0.05, 0.2]                        # Thresholds in seconds (50 ms, 200 ms)
+
+  # M7: C/N0 correlation check
+  mchnCn0Corr:
+    flag: true                              # Enable flag (1 = enabled, 0 = disabled)
+    Pfa: 1e-2                               # Probability of false alarm
+    WindowSize: 30                          # Sliding window size
+    MinWindowSize: 5                        # Minimum sliding window size
+
+  # M8: Doppler single-difference check
+  mchnDoppSD:
+    flag: true                             # Enable flag (1 = enabled, 0 = disabled)
+    MinWindowSize: 5                        # Minimum sliding window size
+    WindowSize: 10                          # Sliding window size
+    Thr: 0.5                                # Single-difference threshold
+
+  # M9: Standard RAIM
+  AntRaim:
+    flag: true                               # Enable flag (1 = enabled, 0 = disabled)
+    Pfa: 1e-3                                # Probability of false alarm
+    Sigma: 14                                # Measurement variance
+
+  # M10: Generalized RAIM
+  AntGRaim:
+    flag: true                                 # Enable flag (1 = enabled, 0 = disabled)
+    Mode: 1                                    # Mode type (1 = 遍历全部核心集合, 2 = 随机选取1个核心集合)
+    Pfa: 1e-3
+    Sigma: 14 
+
+  # M11: Doppler-based RAIM
+  AntDRaim:
+    flag: true                              # Enable flag (1 = enabled, 0 = disabled)
+    Pfa : 1e-2
+    Sigma: 0.5                              # Doppler measurement variance
+
+  # M12: PVT validation
+  AntPVT:
+    flag: true                              # Enable flag (1 = enabled, 0 = disabled)
+    MinHeight: -100                         # Minimum height threshold (m)
+    MaxHeight: 15000                        # Maximum height threshold (m)
+    MaxVelocity: 300                        # Maximum velocity threshold (m/s)
+    MaxClockDrift: 1e-6                     # Maximum clock drift threshold (s/s)
+    MaxPositionChange: 1000                 # Maximum position change threshold (m)
+
+  # M13: Velocity consistency check
+  AntVelCon:
+    flag: true                              # Enable flag (1 = enabled, 0 = disabled)
+    WindowSize: 10                          # Position threshold (m)
+    Pfa: 1e-3                               # Probability of false alarm  
+    Sigma: 0.5                              # Measurement variance
+
+  # M14: IMU validation
+  IMUVal:
+    flag: false                             # Enable flag (1 = enabled, 0 = disabled)
+    DeltaVelThr: 10                         # Velocity increment threshold
+    ObsCnt: 1                               # Number of observation files (determined at runtime)
+
+  # M15: PVT cross validation
+  MantPVT:
+    flag: false                             # Enable flag (1 = enabled, 0 = disabled)
+    PosThr: 100                             # Position threshold (m)
+    TimThr: 10                              # Time threshold (s)
+    VelThr: 100                             # Velocity threshold (m/s)
+    ObsCnt: 1                               # Number of observation files (determined at runtime)
+
+  # M16: CPDD
+  MantCPDD:
+    flag: false                             # Enable flag (1 = enabled, 0 = disabled)
+    Thr: 0.025                              # CPDD threshold
+    ObsCnt: 1                               # Number of observation files (determined at runtime)
